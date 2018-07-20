@@ -62,7 +62,16 @@ set autoread
 set shortmess=atI
 
 "当打开vim且没有文件时自动打开NERDTree
-autocmd vimenter * if !argc() | NERDTree | endif
+" autocmd vimenter * if !argc() | NERDTree | endif
+
+autocmd VimLeave * nested if (!isdirectory($HOME . "/.vim")) |
+    \ call mkdir($HOME . "/.vim") |
+    \ endif |
+    \ execute "mksession! " . $HOME . "/.vim/Session.vim"
+
+autocmd VimEnter * nested if argc() == 0 && filereadable($HOME . "/.vim/Session.vim") |
+    \ execute "source " . $HOME . "/.vim/Session.vim"
+
 " 只剩 NERDTree时自动关闭
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif
 
@@ -631,6 +640,18 @@ Bundle 'terryma/vim-expand-region'
 
 Bundle 'vim-scripts/a.vim'
 
+" Bundle 'tpope/vim-projectionist'
+
+" Bundle 'ludovicchabant/vim-gutentags'
+
+" Bundle 'junegunn/vim-plug'
+
+" if has('python') || has('python3')
+        " Plug 'Yggdroot/LeaderF'
+" Bundle 'Yggdroot/LeaderF'
+set rtp+=/root/.fzf/
+Bundle 'junegunn/fzf.vim'
+
 Bundle 'jiangmiao/auto-pairs'
 
 if g:islinux
@@ -681,7 +702,13 @@ endif
 "python install.py --clang-completer"
 "git submodule update --init --recursive
 "Bundle 'Valloric/YouCompleteMe'
+"Bundle 'rdnetto/YCM-Generator', { 'branch': 'stable'}
+" Bundle 'tdcdev/ycm_simple_conf'
 endif
+
+Bundle 'Valloric/YouCompleteMe'
+Bundle 'rdnetto/YCM-Generator', { 'branch': 'stable'}
+" Bundle 'tdcdev/ycm_simple_conf'
 
 if g:islinux
     call vundle#end()            " 必须
@@ -758,26 +785,29 @@ highlight SpellLocal term=underline cterm=underline
 
 " ################### 自动补全 ###################
 
-if 0
+if 1
 " YouCompleteMe {{{
     "youcompleteme  默认tab  s-tab 和自动补全冲突
-    "let g:ycm_key_list_select_completion=['<c-n>']
-    let g:ycm_key_list_select_completion = ['<Down>']
-    "let g:ycm_key_list_previous_completion=['<c-p>']
-    let g:ycm_key_list_previous_completion = ['<Up>']
+    let g:ycm_key_list_select_completion=['<c-n>']
+    " let g:ycm_key_list_select_completion = ['<Down>']
+    let g:ycm_key_list_previous_completion=['<c-p>']
+    " let g:ycm_key_list_previous_completion = ['<Up>']
     let g:ycm_complete_in_comments = 1  "在注释输入中也能补全
     let g:ycm_complete_in_strings = 1   "在字符串输入中也能补全
     let g:ycm_use_ultisnips_completer = 1 "提示UltiSnips
     let g:ycm_collect_identifiers_from_comments_and_strings = 1   "注释和字符串中的文字也会被收入补全
     let g:ycm_collect_identifiers_from_tags_files = 1
+    let g:ycm_global_ycm_extra_conf = 1
+    let g:ycm_confirm_extra_conf = 0
     " 开启语法关键字补全
     let g:ycm_seed_identifiers_with_syntax=1
 
     "let g:ycm_seed_identifiers_with_syntax=1   "语言关键字补全, 不过python关键字都很短，所以，需要的自己打开
 
     " 跳转到定义处, 分屏打开
-    let g:ycm_goto_buffer_command = 'horizontal-split'
-    " nnoremap <leader>jd :YcmCompleter GoToDefinition<CR>
+    " let g:ycm_goto_buffer_command = 'horizontal-split'
+    let g:ycm_goto_buffer_command = 'same-buffer'
+    nnoremap <leader>hd :YcmCompleter GoToDefinition<CR>
     nnoremap <leader>jd :YcmCompleter GoToDefinitionElseDeclaration<CR>
     nnoremap <leader>gd :YcmCompleter GoToDeclaration<CR>
 
@@ -798,6 +828,24 @@ if 0
         \ 'tagbar' : 1,
         \ 'gitcommit' : 1,
         \}
+
+    " let g:ycm_simple_conf_active = 0
+    " let g:ycm_show_diagnostics_ui = 0
+    let g:ycm_add_preview_to_completeopt = 0
+    let g:ycm_show_diagnostics_ui = 0
+    let g:ycm_server_log_level = 'info'
+    let g:ycm_min_num_identifier_candidate_chars = 2
+    let g:ycm_collect_identifiers_from_comments_and_strings = 1
+    let g:ycm_complete_in_strings=1
+    let g:ycm_key_invoke_completion = '<c-z>'
+    set completeopt=menu,menuone
+
+    noremap <c-z> <NOP>
+
+    let g:ycm_semantic_triggers =  {
+            \ 'c,cpp,python,java,go,erlang,perl': ['re!\w{2}'],
+            \ 'cs,lua,javascript': ['re!\w{2}'],
+            \ }
 " }}}
 endif
 
@@ -809,6 +857,21 @@ endif
 
 " ################### 功能相关 ###################
 
+if 0
+" LeaderF {{{
+    let g:Lf_ShortcutF = '<c-p>'
+    let g:Lf_ShortcutB = '<m-n>'
+    noremap <leader>rr :LeaderfMru<cr>
+    noremap <leader>ii :LeaderfFunction<cr>
+    noremap <leader>ff :LeaderfBufTag<cr>
+    noremap <leader>kk :LeaderfBuffer<cr>
+    noremap <leader>mm :LeaderfTag<cr>
+    let g:Lf_MruMaxFiles = 2048
+    let g:Lf_StlSeparator = { 'left': '', 'right': '', 'font': '' }
+" }}}
+endif
+
+if 1
 " ctrlp ctrlpfunky{{{
     "move
     " <C-j>: down
@@ -844,6 +907,7 @@ endif
 
     let g:ctrlp_extensions = ['funky']
 " }}}
+endif
 
 " Ack{{{
     if g:islinux
@@ -1266,6 +1330,31 @@ endif
 "let g:SuperTabDefaultCompletionType = '<C-X><C-U>'
  let g:SuperTabRetainCompletionType=2
 " }}}
+
+if 0
+" gutentags {{{
+let g:gutentags_project_root = ['.root', '.svn', '.git', '.hg', '.project']
+
+" 所生成的数据文件的名称
+let g:gutentags_ctags_tagfile = '.tags'
+
+" 将自动生成的 tags 文件全部放入 ~/.cache/tags 目录中，避免污染工程目录
+" let s:vim_tags = expand('~/.cache/tags')
+let s:vim_tags = expand('./tags')
+let g:gutentags_cache_dir = s:vim_tags
+
+" 配置 ctags 的参数
+let g:gutentags_ctags_extra_args = ['--fields=+niazS', '--extra=+q']
+let g:gutentags_ctags_extra_args += ['--c++-kinds=+px']
+let g:gutentags_ctags_extra_args += ['--c-kinds=+px']
+
+" 检测 ~/.cache/tags 不存在就新建
+if !isdirectory(s:vim_tags)
+   silent! call mkdir(s:vim_tags, 'p')
+endif
+" }}}
+endif
+
 endif
 
 " a.vim
