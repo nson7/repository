@@ -62,8 +62,9 @@ set autoread
 set shortmess=atI
 
 "当打开vim且没有文件时自动打开NERDTree
-" autocmd vimenter * if !argc() | NERDTree | endif
+autocmd vimenter * if !argc() | NERDTree | endif
 
+if 0
 autocmd VimLeave * nested if (!isdirectory($HOME . "/.vim")) |
     \ call mkdir($HOME . "/.vim") |
     \ endif |
@@ -71,6 +72,7 @@ autocmd VimLeave * nested if (!isdirectory($HOME . "/.vim")) |
 
 autocmd VimEnter * nested if argc() == 0 && filereadable($HOME . "/.vim/Session.vim") |
     \ execute "source " . $HOME . "/.vim/Session.vim"
+endif
 
 " 只剩 NERDTree时自动关闭
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif
@@ -941,14 +943,22 @@ if 1
     nnoremap <leader>jd :YcmCompleter GoToDefinitionElseDeclaration<CR>
     nnoremap <leader>gd :YcmCompleter GoToDeclaration<CR>
 
+    if 0
     " 引入，可以补全系统，以及python的第三方包 针对新老版本YCM做了兼容
-    " old version
     if !empty(glob("~/.vim/bundle/YouCompleteMe/cpp/ycm/.ycm_extra_conf.py"))
         let g:ycm_global_ycm_extra_conf = "~/.vim/bundle/YouCompleteMe/cpp/ycm/.ycm_extra_conf.py"
     endif
-    " new version
     if !empty(glob("~/.vim/bundle/YouCompleteMe/third_party/ycmd/cpp/ycm/.ycm_extra_conf.py"))
         let g:ycm_global_ycm_extra_conf = "~/.vim/bundle/YouCompleteMe/third_party/ycmd/cpp/ycm/.ycm_extra_conf.py"
+    endif
+
+    if !empty(glob("~/.vim/autoload/YouCompleteMe/cpp/ycm/.ycm_extra_conf.py"))
+        let g:ycm_global_ycm_extra_conf = "~/.vim/autoload/YouCompleteMe/cpp/ycm/.ycm_extra_conf.py"
+    endif
+    endif
+
+    if !empty(glob("~/.vim/autoload/YouCompleteMe/third_party/ycmd/cpp/ycm/.ycm_extra_conf.py"))
+        let g:ycm_global_ycm_extra_conf = "~/.vim/autoload/YouCompleteMe/third_party/ycmd/cpp/ycm/.ycm_extra_conf.py"
     endif
 
     " 直接触发自动补全 insert模式下
