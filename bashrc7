@@ -1,0 +1,311 @@
+# ~/.bashrc: executed by bash(1) for non-login shells.
+
+# Note: PS1 and umask are already set in /etc/profile. You should not
+# need this unless you want different defaults for root.
+# PS1='${debian_chroot:+($debian_chroot)}\h:\w\$ '
+# umask 022
+
+# You may uncomment the following lines if you want `ls' to be colorized:
+# export LS_OPTIONS='--color=auto'
+# eval "`dircolors`"
+# alias ls='ls $LS_OPTIONS'
+# alias ll='ls $LS_OPTIONS -l'
+# alias l='ls $LS_OPTIONS -lA'
+#
+# Some more alias to avoid making mistakes:
+# alias rm='rm -i'
+# alias cp='cp -i'
+# alias mv='mv -i'
+# alias j='autojump'
+alias lvim='vim -c "normal '\''0"'
+
+# export PATH=$PATH:/media/nson7/source/nson7/4.5.1/bin
+# export PATH=$PATH:/media/nson7/source/nson7/4.3.3/bin
+# export PATH=$PATH:/media/nson7/source/nson7/4.2.2/usr/bin
+export PATH=$PATH:/media/nson7/source/nson7/4.9.3/bin
+
+export PATH=$PATH:/firefly/arm-eabi-4.6/bin
+# export PATH=$PATH:/media/nson7/source/nson7/gcc-linaro-6.3.1/bin
+
+export PATH=$PATH:/media/nson7/source/nson7/xtensa-esp32-elf/bin
+export IDF_PATH=/media/nson7/source/nson7/esp-idf
+
+export LD_LIBRARY_PATH=/usr/local/lib
+# export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/Trolltech/QtEmbedded-4.7.0-arm/lib
+
+export JAVA_HOME=/media/nson7/source/nson7/jdk1.8.0_171
+export JRE_HOME=/media/nson7/source/nson7/jdk1.8.0_171/jre
+export CLASSPATH=.:$CLASSPATH:$JAVA_HOME/lib:$JRE_HOME/lib
+export PATH=$PATH:$JAVA_HOME/bin:$JRE_HOME/bin
+
+export CATALINA_HOME=/media/nson7/source/nson7/apache-tomcat-8.5.30
+
+export PATH=$PATH:/usr/local/freetds/bin
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/freetds/lib
+
+export ORACLE_HOME=/usr/lib/oracle/12.2/client64
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ORACLE_HOME/lib
+export PATH=$PATH:$ORACLE_HOME/bin
+
+export FZF_DEFAULT_COMMAND='ag -g ""'
+export FZF_DEFAULT_OPTS="--layout=reverse --inline-info"
+export FZF_CTRL_T_OPTS="--preview '(highlight -O ansi -l {} 2> /dev/null || cat {} || tree -C {}) 2> /dev/null | head -200'"
+
+# ~/.bashrc: executed by bash(1) for non-login shells.
+# see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
+# for examples
+
+# If not running interactively, don't do anything
+[ -z "$PS1" ] && return
+
+# don't put duplicate lines in the history. See bash(1) for more options
+# ... or force ignoredups and ignorespace
+HISTCONTROL=ignoredups:ignorespace
+
+# append to the history file, don't overwrite it
+shopt -s histappend
+
+# for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
+HISTSIZE=200000
+HISTFILESIZE=200000
+
+# check the window size after each command and, if necessary,
+# update the values of LINES and COLUMNS.
+shopt -s checkwinsize
+
+# make less more friendly for non-text input files, see lesspipe(1)
+[ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
+
+# set variable identifying the chroot you work in (used in the prompt below)
+if [ -z "$debian_chroot" ] && [ -r /etc/debian_chroot ]; then
+    debian_chroot=$(cat /etc/debian_chroot)
+fi
+
+# set a fancy prompt (non-color, unless we know we "want" color)
+case "$TERM" in
+    xterm-color) color_prompt=yes;;
+esac
+
+# uncomment for a colored prompt, if the terminal has the capability; turned
+# off by default to not distract the user: the focus in a terminal window
+# should be on the output of commands, not on the prompt
+#force_color_prompt=yes
+
+if [ -n "$force_color_prompt" ]; then
+    if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
+        # We have color support; assume it's compliant with Ecma-48
+        # (ISO/IEC-6429). (Lack of such support is extremely rare, and such
+        # a case would tend to support setf rather than setaf.)
+        color_prompt=yes
+    else
+        color_prompt=
+    fi
+fi
+
+if [ "$color_prompt" = yes ]; then
+    PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+else
+    PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
+fi
+unset color_prompt force_color_prompt
+
+# If this is an xterm set the title to user@host:dir
+case "$TERM" in
+    xterm*|rxvt*)
+        PS1="\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]$PS1"
+        ;;
+    *)
+        ;;
+esac
+
+# enable color support of ls and also add handy aliases
+if [ -x /usr/bin/dircolors ]; then
+    test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
+    alias ls='ls --color=auto'
+    #alias dir='dir --color=auto'
+    #alias vdir='vdir --color=auto'
+
+    alias grep='grep --color=auto'
+    alias fgrep='fgrep --color=auto'
+    alias egrep='egrep --color=auto'
+fi
+
+# some more ls aliases
+alias ll='ls -alF'
+alias la='ls -A'
+alias l='ls -CF'
+
+alias h=history
+shopt -s histverify
+export HISTIGNORE="cd [a-zA-Z0-9_.*]*:mv [a-zA-Z0-9_.*]*"
+bind -x '"\C-R": READLINE_LINE=$(history | grep "${READLINE_LINE}" | tac | ~/bin/percol.py | sed "s/^ *[0-9]*  *//g") READLINE_POINT='
+PROMPT_COMMAND="history -a"        # update histfile after every command
+
+# cleanfile
+function cleanfile () {
+    if [ -z "$1"  ]; then
+        echo "Usage: remove duplicated lines without sortdt"
+        echo "  cleanfile ~/.bash_history"
+    else
+        local bkfile="$1.backup"
+        # \+ does not work in OSX sed
+        # delte short commands, delete git related commands
+        sed 's/ *$//g;' $1 | sed '/^.\{1,4\}$/d' | sed '/^g[nlabcdusfp]\{1,5\} .*/d' | sed '/^git [nr] /d' | sed '/^rm /d' | sed '/^cgnb /d' | sed '/^touch /d' > $bkfile
+        # @see Page on stack Overflow/questions/11532157/unix-removing-duplicate-lines-without-sorting
+        cat $bkfile | awk ' !x[$0]++' > $1
+        rm $bkfile
+    fi
+
+}
+
+# fasd
+function gurl () {
+    if [ -z "$1"  ]; then
+        echo "Usage: gurl commit-id"
+        echo "get the full http url of commit"
+    else
+        local msg=
+        git remote -v|grep "origin\s\+.*\s\+(fetch)"|sed -e "s/origin\s\+\(.*\)\s\+(fetch)/\1/"
+
+        local url=""
+        # github
+        if [ "${msg:0:14}" == "git@github.com"  ]; then
+            echo https://github.com/
+            echo ${msg}|sed -e "s/^git\@github\.com\:\(.*\)\.git$/\1/"
+            /commit/$1
+        fi
+    fi
+}
+
+function gcid () {
+    local commit_id=
+    git log --pretty=format:'%h %ad %s (%an)' --date=short|percol|sed -e"s/^\([a-z0-9]\+\)\s\+.*$/\1/"
+
+    echo ${commit_id}
+
+}
+
+function gqurl () {
+    local commit_id=
+    git log --pretty=format:'%h %ad %s (%an)' --date=short|percol|sed -e"s/^\([a-z0-9]\+\)\s\+.*$/\1/"
+
+    gurl ${commit_id}
+}
+
+
+fasd_cache="$HOME/.fasd-init-bash"
+if [ "$(command -v fasd)" -nt "$fasd_cache" -o ! -s "$fasd_cache"  ]; then
+    fasd --init posix-alias bash-hook bash-ccomp bash-ccomp-install >| "$fasd_cache"
+fi
+source "$fasd_cache"
+unset fasd_cache
+
+# percol.py
+[ $(uname -s | grep -c CYGWIN) -eq 1  ] && OS_NAME="CYGWIN" || OS_NAME=`uname -s`
+function pclip() {
+    if [ $OS_NAME == CYGWIN  ]; then
+        putclip $@;
+    elif [ $OS_NAME == Darwin  ]; then
+        pbcopy $@;
+    else
+        if [ -x /usr/bin/xsel  ]; then
+            xsel -ib $@;
+        else
+            if [ -x /usr/bin/xclip  ]; then
+                xclip -selection c $@;
+            else
+                echo "Neither xsel or xclip is installed!"
+            fi
+        fi
+    fi
+
+}
+
+# search the file and pop up dialog, then put the full path in clipboard
+function baseff()
+{
+    local fullpath=$*
+    local filename=${fullpath##*/} # remove "/" from the beginning
+    filename=${filename##*./} # remove  ".../" from the beginning
+    # Only the filename without path is needed
+    # filename should be reasonable
+    local cli=`find . -not -iwholename '*/vendor/*' -not -iwholename '*/bower_components/*' -not -iwholename '*/node_modules/*' -not -iwholename '*/target/*' -not -iwholename '*.svn*' -not -iwholename '*.git*' -not -iwholename '*.sass-cache*' -not -iwholename '*.hg*' -type f -path '*'${filename}'*' -print | ~/bin/percol.py`
+    # convert relative path to full path
+    echo $(cd $(dirname $cli); pwd)/$(basename $cli)
+
+}
+
+function ff()
+{
+    local cli=`baseff $*`
+    #echo ${cli} | sed 's%^'${HOME}'%~%'
+    #echo -n ${cli}  | sed 's%^'${HOME}'%~%' | pclip
+    echo ${cli}
+    echo -n ${cli} | pclip
+
+}
+
+function cf()
+{
+    local cli=`baseff $*`
+    local p=`cygpath -w $cli`
+    echo ${p}
+    echo -n ${p} | pclip;
+
+}
+
+function h () {
+# reverse history, pick up one line, remove new line characters and put it into clipboard
+if [ -z "$1"  ]; then
+    history | sed '1!G;h;$!d' | ~/bin/percol.py | sed -n 's/^ *[0-9][0-9]* *\(.*\)$/\1/p'| tr -d '\n' | pclip
+else
+    history | grep "$1" | sed '1!G;h;$!d' | ~/bin/percol.py | sed -n 's/^ *[0-9][0-9]* *\(.*\)$/\1/p'| tr -d '\n' | pclip
+fi
+
+}
+
+function glsf () {
+    local str=`git --no-pager log --oneline --stat $* |  ~/bin/percol.py`
+    if [[ $str =~ ^[[:space:]]*([a-z0-9A-Z_.\/-]*).*$  ]]; then
+        echo -n ${BASH_REMATCH[1]} |pclip;
+        echo ${BASH_REMATCH[1]}
+    fi
+
+}
+
+# Alias definitions.
+# You may want to put all your additions into a separate file like
+# ~/.bash_aliases, instead of adding them here directly.
+# See /usr/share/doc/bash-doc/examples in the bash-doc package.
+
+if [ -f ~/.bash_aliases ]; then
+    . ~/.bash_aliases
+fi
+
+# enable programmable completion features (you don't need to enable
+# this, if it's already enabled in /etc/bash.bashrc and /etc/profile
+# sources /etc/bash.bashrc).
+#if [ -f /etc/bash_completion ] && ! shopt -oq posix; then
+#    . /etc/bash_completion
+#fi
+
+# autojump
+[[ -s /etc/profile.d/autojump.sh  ]] && . /etc/profile.d/autojump.sh
+. /usr/share/autojump/autojump.sh
+
+function s(){
+    local spath="/usr/local/bin/s" # 可用 which s 查看
+    if [[ ${1:0:1} != '-' ]]
+    then
+        $spath $* | less
+    else
+        $spath $*
+    fi
+}
+
+
+# fzfp() {
+# fzf --preview '[[ $(file --mime {}) =~ binary ]] && echo {} is a binary file || (rougify {}  || highlight -O ansi -l {} || coderay {} || cat {}) 2> /dev/null | head -500'
+# alias tt='fzf --preview '"'"'[[ $(file --mime {}) =~ binary ]] && echo {} is a binary file || (rougify {}  || highlight -O ansi -l {} || coderay {} || cat {}) 2> /dev/null | head -500'"'"
+# }
+
