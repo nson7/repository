@@ -22,7 +22,9 @@ alias lvim='vim -c "normal '\''0"'
 # export PATH=$PATH:/media/nson7/source/nson7/4.5.1/bin
 # export PATH=$PATH:/media/nson7/source/nson7/4.3.3/bin
 # export PATH=$PATH:/media/nson7/source/nson7/4.2.2/usr/bin
-export PATH=$PATH:/media/nson7/source/nson7/4.9.3/bin
+# export PATH=$PATH:/media/nson7/source/nson7/4.9.3/bin
+export PATH=$PATH:/media/nson7/source/nson7/4.3.2/bin
+# export PATH=$PATH:/media/nson7/source/nson7/4.4.3/bin
 
 export PATH=$PATH:/firefly/arm-eabi-4.6/bin
 # export PATH=$PATH:/media/nson7/source/nson7/gcc-linaro-6.3.1/bin
@@ -46,6 +48,10 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/freetds/lib
 export ORACLE_HOME=/usr/lib/oracle/12.2/client64
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ORACLE_HOME/lib
 export PATH=$PATH:$ORACLE_HOME/bin
+
+# export PATH=$PATH:/opt/valgrind-3.13/bin
+export PATH=$PATH:/usr/local/nasm/bin
+export PATH=$PATH:/usr/local/x264/bin
 
 export FZF_DEFAULT_COMMAND='ag -g ""'
 export FZF_DEFAULT_OPTS="--layout=reverse --inline-info"
@@ -157,48 +163,6 @@ function cleanfile () {
     fi
 
 }
-
-# fasd
-function gurl () {
-    if [ -z "$1"  ]; then
-        echo "Usage: gurl commit-id"
-        echo "get the full http url of commit"
-    else
-        local msg=
-        git remote -v|grep "origin\s\+.*\s\+(fetch)"|sed -e "s/origin\s\+\(.*\)\s\+(fetch)/\1/"
-
-        local url=""
-        # github
-        if [ "${msg:0:14}" == "git@github.com"  ]; then
-            echo https://github.com/
-            echo ${msg}|sed -e "s/^git\@github\.com\:\(.*\)\.git$/\1/"
-            /commit/$1
-        fi
-    fi
-}
-
-function gcid () {
-    local commit_id=
-    git log --pretty=format:'%h %ad %s (%an)' --date=short|percol|sed -e"s/^\([a-z0-9]\+\)\s\+.*$/\1/"
-
-    echo ${commit_id}
-
-}
-
-function gqurl () {
-    local commit_id=
-    git log --pretty=format:'%h %ad %s (%an)' --date=short|percol|sed -e"s/^\([a-z0-9]\+\)\s\+.*$/\1/"
-
-    gurl ${commit_id}
-}
-
-
-fasd_cache="$HOME/.fasd-init-bash"
-if [ "$(command -v fasd)" -nt "$fasd_cache" -o ! -s "$fasd_cache"  ]; then
-    fasd --init posix-alias bash-hook bash-ccomp bash-ccomp-install >| "$fasd_cache"
-fi
-source "$fasd_cache"
-unset fasd_cache
 
 # percol.py
 [ $(uname -s | grep -c CYGWIN) -eq 1  ] && OS_NAME="CYGWIN" || OS_NAME=`uname -s`
