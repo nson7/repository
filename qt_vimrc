@@ -1,20 +1,17 @@
+let mapleader = ','
+let g:mapleader = ','
 
-set title
-set novisualbell
-set noerrorbells
-set t_vb=
-set tm=500
+set cursorcolumn
+set cursorline
 
 set magic
-
 set ruler
 set showcmd
 set showmode
-
 set scrolloff=7
 
-set statusline=%<%f\ %h%m%r%=%k[%{(&fenc==\"\")?&enc:&fenc}%{(&bomb?\",BOM\":\"\")}]\ %-14.(%l,%c%V%)\ %P
-set laststatus=2
+set number
+set nowrap
 
 set showmatch
 set matchtime=2
@@ -24,10 +21,14 @@ set incsearch
 set ignorecase
 set smartcase
 
+set smartindent
+set autoindent
+
 nnoremap k gk
 nnoremap gk k
 nnoremap j gj
 nnoremap gj j
+nnoremap gg :0<Enter>
 
 inoremap kj <Esc>
 vnoremap kj <Esc>
@@ -35,15 +36,7 @@ vnoremap kj <Esc>
 nnoremap H ^
 nnoremap L $
 
-nnoremap U <C-r>
-
 nnoremap <silent><space> :nohls<CR>
-
-nnoremap <silent> n nzz
-nnoremap <silent> N Nzz
-nnoremap <silent> * *zz
-nnoremap <silent> # #zz
-nnoremap <silent> g* g*zz
 
 cnoremap <C-j> <Down>
 cnoremap <C-k> <Up>
